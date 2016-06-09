@@ -10,7 +10,8 @@ const home = require('./controllers/home'),
 
 module.exports.initialize = function(app) {
 
-  // app.get('/', home.index);
+  app.get('/api/', home.isAlive);
+
   app.get('/api/player', player.index);
   app.get('/api/player/:id', player.getById);
   app.get('/api/player/autocomplete/:term', player.autocomplete)
