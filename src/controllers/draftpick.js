@@ -1,3 +1,4 @@
+'use strict';
 const Draftpick = require('../models/draftpick')
 
 exports.index = function (req, res) {
@@ -25,6 +26,45 @@ exports.getById = function (req, res) {
     res.status(500).json({ error: err.message });
   });
 
+};
+
+exports.getKeepersForLeague = function (req, res) {
+
+  let query = {
+    where: { league_id: req.params.id },
+    whereNot: { keeper_status_id: 1 }
+  };
+  if (req.query.includeDrops && req.query.includeDrops.toLowerCase() === 'true') {
+    delete query.whereNot;
+  }
+  Draftpick
+  .query(query)
+  .fetchAll({ withRelated: ['currentOwner', 'player', 'keeperStatus'] })
+  .then(function (draftpick) {
+    res.json(draftpick);
+  })
+  .catch(function (err) {
+    res.status(500).json({ error: err.message });
+  });
+};
+
+exports.getKeepersForLeagueOwner = function (req, res) {
+  let query = {
+    where: { league_id: req.params.league_id, current_owner_id: req.params.owner_id },
+    whereNot: { keeper_status_id: 1 }
+  };
+  if (req.query.includeDrops && req.query.includeDrops.toLowerCase() === 'true') {
+    delete query.whereNot;
+  }
+  Draftpick
+  .query(query)
+  .fetchAll({ withRelated: ['player', 'keeperStatus'] })
+  .then(function (draftpick) {
+    res.json(draftpick);
+  })
+  .catch(function (err) {
+    res.status(500).json({ error: err.message });
+  });
 };
 
 
@@ -92,11 +132,10 @@ exports.deactivate = function (req, res) {
   Draftpick.forge({ id: req.params.id })
   .fetch({ require: true })
   .then(function (draftpick) {
-    draftpick.save({
-      active: false,
-    })
+    draftpick
+    .destroy()
     .then(function (draftpick) {
-      res.json(draftpick);
+      res.json({ message: 'Draftpick successfully deleted' });
     })
     .catch(function (err) {
       res.status(500).json({ error: err.message });

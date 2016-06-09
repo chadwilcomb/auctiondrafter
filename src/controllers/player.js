@@ -5,7 +5,9 @@ const Team = require('../models/team')
 exports.index = function (req, res) {
 
   let query = { where: { active: true } };
-  if (req.query.includeInactives === 'true') query = {};
+  if (req.query.includeInactives && req.query.includeInactives.toLowerCase() === 'true') {
+    query = {};
+  }
 
   Player
   .query(query)

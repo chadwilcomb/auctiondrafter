@@ -5,7 +5,8 @@ const home = require('./controllers/home'),
     owner = require('./controllers/owner'),
     draft = require('./controllers/draft'),
     roster = require('./controllers/roster'),
-    draftpick = require('./controllers/draftpick');
+    draftpick = require('./controllers/draftpick'),
+    trade = require('./controllers/trade');
 
 module.exports.initialize = function(app) {
 
@@ -47,5 +48,12 @@ module.exports.initialize = function(app) {
 
   app.get('/api/draftpick', draftpick.index);
   app.get('/api/draftpick/:id', draftpick.getById);
+  app.get('/api/draftpick/keepers/league/:id', draftpick.getKeepersForLeague);
+  app.get('/api/draftpick/keepers/league/:league_id/owner/:owner_id', draftpick.getKeepersForLeagueOwner);
+
+  app.get('/api/trade', trade.index);
+  app.get('/api/trade/league/:id', trade.getTradesForLeague);
+  app.get('/api/trade/league/:league_id/owner/:owner_id', trade.getTradesForLeagueOwner)
+
 
 };

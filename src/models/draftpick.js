@@ -3,6 +3,7 @@ const Bookshelf = require('../bookshelf');
 require('./owner');
 require('./player');
 require('./owner');
+require('./keeperStatus');
 
 const Draftpick = Bookshelf.Model.extend({
   tableName: 'draftpick',
@@ -17,6 +18,9 @@ const Draftpick = Bookshelf.Model.extend({
   },
   currentOwner () {
     return this.belongsTo('Owner', 'current_owner_id');
+  },
+  keeperStatus () {
+    return this.belongsTo('KeeperStatus', 'keeper_status_id')
   }
 });
 
