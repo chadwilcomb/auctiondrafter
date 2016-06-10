@@ -53,8 +53,11 @@ module.exports.initialize = function(app) {
   app.get('/api/draftpick/keepers/league/:league_id/owner/:owner_id', draftpick.getKeepersForLeagueOwner);
 
   app.get('/api/trade', trade.index);
+  app.get('/api/trade/:id', trade.getById);
   app.get('/api/trade/league/:id', trade.getTradesForLeague);
-  app.get('/api/trade/league/:league_id/owner/:owner_id', trade.getTradesForLeagueOwner)
+  app.get('/api/trade/league/:league_id/owner/:owner_id', trade.getTradesForLeagueOwner);
+  app.post('/api/trade', trade.submitTrade);
+
 
 
 };
