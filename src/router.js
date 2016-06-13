@@ -57,7 +57,6 @@ module.exports.initialize = function(app) {
   app.get('/api/trade/league/:id', trade.getTradesForLeague);
   app.get('/api/trade/league/:league_id/owner/:owner_id', trade.getTradesForLeagueOwner);
   app.post('/api/trade', trade.submitTrade);
-
-
+  app.put('/api/trade/:id', trade.update);
 
 };

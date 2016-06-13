@@ -1,10 +1,10 @@
 'use strict';
-const Trade = require('../models/trade')
+const Trade = require('../models/trade');
+const LeagueOwner = require('../models/leagueOwner');
 
 exports.index = function (req, res) {
 
   Trade
-  // .query({})
   .fetchAll({ withRelated: ['fromOwner', 'toOwner', 'tradeStatus', 'fromDraftpicks.player', 'toDraftpicks.player'] })
   .then(function (results) {
     res.json(results);
@@ -31,12 +31,11 @@ exports.getById = function (req, res) {
 
 exports.getTradesForLeague = function (req, res) {
 
-  let query = {
-    where: { league_id: req.params.id },
-    whereNot: { trade_status_id: 4 }
+  const query = {
+    where: { league_id: req.params.id }
   };
-  if (req.query.includeCancelled && req.query.includeCancelled.toLowerCase() === 'true') {
-    delete query.whereNot;
+  if (!req.query.includeCancelled || req.query.includeCancelled.toLowerCase() !== 'true') {
+    query.whereNot = { trade_status_id: 4 }
   }
 
   Trade
@@ -70,6 +69,7 @@ exports.getTradesForLeagueOwner = function (req, res) {
   });
 };
 
+// POST
 exports.submitTrade = function (req, res) {
 
   Trade
@@ -79,18 +79,87 @@ exports.submitTrade = function (req, res) {
     from_cash: req.body.from_cash,
     to_cash: req.body.to_cash,
     league_id: req.body.league_id,
-    proposed: new Date(),
-    // trade_status_id: 1 //Proposed
-    // from_draftpicks: req.body.from_draftpicks,
-    // to_draftpicks: req.body.to_draftpicks,
+    proposed: new Date()
   })
   .save()
   .then(function (trade) {
-    console.log('trade id: ' + trade.get('id'));
-    console.log(req.body.from_draftpicks);
     trade.fromDraftpicks().attach(req.body.from_draftpicks);
     trade.toDraftpicks().attach(req.body.to_draftpicks);
     res.json(trade);
+  })
+  .catch(function (err) {
+    res.status(500).json({ error: err.message });
+  });
+
+};
+
+//PUT
+exports.update = function (req, res) {
+
+  // TODO: Only allow update of trade_status_id unless user is Admin
+  const tradeStatus = parseInt(req.body.trade_status_id);
+
+  Trade.forge({ id: req.params.id })
+  .fetch({ withRelated: ['fromDraftpicks', 'toDraftpicks'], require: true })
+  .then(function (trade) {
+    const previousTradeStatus = trade.get('trade_status_id');
+    const update = {
+      // from_owner_id: req.body.from_owner_id || trade.get('from_owner_id'),
+      // to_owner_id: req.body.to_owner_id || trade.get('to_owner_id'),
+      // from_cash: req.body.from_cash || trade.get('from_cash'),
+      // to_cash: req.body.to_cash || trade.get('to_cash'),
+      // league_id: req.body.league_id || trade.get('league_id'),
+      trade_status_id: tradeStatus || trade.get('trade_status_id'),
+    };
+    switch (tradeStatus) {
+      case 1: //Proposed
+        update.proposed = new Date()
+        break;
+      case 2: //Accepted
+        update.accepted = new Date()
+        break;
+      case 3: //Rejected
+        update.rejected = new Date()
+        break;
+      case 4: //Cancelled
+        update.cancelled = new Date()
+        break;
+      case 5: //Processed
+        break;
+      default:
+
+    }
+    trade.save(update, { patch: true })
+    .then(function (trade) {
+      if (trade.get('trade_status_id') !== previousTradeStatus && trade.get('trade_status_id') === 2) {
+
+        // if trade accepted, update draftpicks, league_owner/roster draft_budget/bid_balance
+        trade.related('fromDraftpicks').forEach(function (draftpick) {
+          draftpick.save({ current_owner_id: trade.get('to_owner_id') });
+        });
+        trade.related('toDraftpicks').forEach(function (draftpick) {
+          draftpick.save({ current_owner_id: trade.get('from_owner_id') });
+        });
+        if (trade.get('from_cash') > 0 || trade.get('to_cash') > 0) {
+          LeagueOwner.forge({ league_id: trade.get('league_id'), owner_id: trade.get('from_owner_id') })
+          .fetch({ require: true })
+          .then(function (leagueOwner) {
+            const budget = leagueOwner.get('draft_budget') - trade.get('from_cash') + trade.get('to_cash');
+            leagueOwner.save({ draft_budget: budget })
+          });
+          LeagueOwner.forge({ league_id: trade.get('league_id'), owner_id: trade.get('to_owner_id') })
+          .fetch({ require: true })
+          .then(function (leagueOwner) {
+            const budget = leagueOwner.get('draft_budget') + trade.get('from_cash') - trade.get('to_cash');
+            leagueOwner.save({ draft_budget: budget })
+          });
+        }
+      }
+      res.json(trade);
+    })
+    .catch(function (err) {
+      res.status(500).json({ error: err.message });
+    });
   })
   .catch(function (err) {
     res.status(500).json({ error: err.message });

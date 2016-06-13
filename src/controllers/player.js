@@ -87,7 +87,7 @@ exports.update = function (req, res) {
       position: req.body.position || player.get('position'),
       team_id: req.body.team_id || player.get('team_id'),
       active: req.body.active || player.get('active'),
-    })
+    }, { patch: true })
     .then(function (player) {
       res.json(player);
     })
