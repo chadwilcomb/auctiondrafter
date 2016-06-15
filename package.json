@@ -4,22 +4,48 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/app",
-    "start-heroku": "NODE_ENV=heroku node src/app"
+    "start": "node server",
+    "start-heroku": "NODE_ENV=heroku node server",
+    "test": "cross-env NODE_ENV=test mocha --recursive --compilers js:babel-register --require ./test/setup.js",
+    "test:watch": "npm test -- --watch"
   },
   "author": "Chad Wilcomb <chadwilcomb@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "babel-polyfill": "^6.3.14",
+    "classnames": "^2.1.2",
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7",
+    "react-redux": "^4.2.1",
+    "redux": "^3.2.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.3.15",
+    "babel-loader": "^6.2.0",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "babel-preset-react-hmre": "^1.1.1",
+    "babel-register": "^6.3.13",
     "body-parser": "^1.15.1",
     "bookshelf": "^0.9.5",
     "compression": "^1.6.1",
     "cors": "^2.7.1",
+    "cross-env": "^1.0.7",
+    "expect": "^1.8.0",
     "express": "^4.13.4",
+    "jsdom": "^5.6.1",
     "knex": "^0.10.0",
     "knex-csv-seeder": "^0.4.0",
-    "pg": "^4.5.5"
-  },
-  "devDependencies": {
-    "nodemon": "^1.3.7"
+    "mocha": "^2.2.5",
+    "node-libs-browser": "^0.5.2",
+    "nodemon": "^1.3.7",
+    "pg": "^4.5.5",
+    "raw-loader": "^0.5.1",
+    "react-addons-test-utils": "^0.14.7",
+    "style-loader": "^0.12.3",
+    "todomvc-app-css": "^2.0.1",
+    "webpack": "^1.9.11",
+    "webpack-dev-middleware": "^1.2.0",
+    "webpack-hot-middleware": "^2.9.1"
   }
 }
