@@ -1,15 +1,16 @@
-const home = require('./controllers/home'),
-    player = require('./controllers/player'),
-    team = require('./controllers/team')
-    league = require('./controllers/league'),
-    owner = require('./controllers/owner'),
-    draft = require('./controllers/draft'),
-    roster = require('./controllers/roster'),
-    draftpick = require('./controllers/draftpick'),
-    trade = require('./controllers/trade');
+const home = require('./api/controllers/home'),
+    player = require('./api/controllers/player'),
+    team = require('./api/controllers/team')
+    league = require('./api/controllers/league'),
+    owner = require('./api/controllers/owner'),
+    draft = require('./api/controllers/draft'),
+    roster = require('./api/controllers/roster'),
+    draftpick = require('./api/controllers/draftpick'),
+    trade = require('./api/controllers/trade');
 
 module.exports.initialize = function(app) {
 
+  // API Routes
   app.get('/api/', home.isAlive);
 
   app.get('/api/player', player.index);
@@ -58,5 +59,10 @@ module.exports.initialize = function(app) {
   app.get('/api/trade/league/:league_id/owner/:owner_id', trade.getTradesForLeagueOwner);
   app.post('/api/trade', trade.submitTrade);
   app.put('/api/trade/:id', trade.update);
+
+  // WEB CLIENT Routes
+  app.get('/', function(req, res) {
+    res.sendFile(__dirname + '/index.html')
+  })
 
 };
