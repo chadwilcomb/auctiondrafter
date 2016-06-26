@@ -61,8 +61,8 @@ module.exports.initialize = function(app) {
   app.put('/api/trade/:id', trade.update);
 
   // WEB CLIENT Routes
-  app.get('/', function(req, res) {
+  app.get('/*', function(req, res) {
     res.sendFile(__dirname + '/index.html')
-  })
+  });
 
 };

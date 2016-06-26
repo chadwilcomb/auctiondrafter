@@ -1,51 +1,40 @@
-const path = require('path')
-const webpack = require('webpack')
+// Very similar to webpack.prod.config.js. Common parts could be extracted to a base config.
+// See example at:
+// https://github.com/shakacode/react-webpack-rails-tutorial/blob/master/client%2Fwebpack.client.base.config.js
+const webpack = require('webpack');
+const path = require('path');
 const autoprefixer = require('autoprefixer');
 
 module.exports = {
-  devtool: 'cheap-module-eval-source-map',
+
   entry: [
     'webpack-hot-middleware/client',
+    'tether',
     'font-awesome-loader',
     'bootstrap-loader',
     './client/app'
   ],
+
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
-    publicPath: '/static/'
+    // path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'public', 'assets'),
+    filename: 'app.js',
+    publicPath: '/assets/',
   },
+
+  devtool: '#cheap-module-eval-source-map',
+
+  resolve: { extensions: ['', '.js', '.jsx'] },
+
   plugins: [
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin(),
+    new webpack.ProvidePlugin({
+      "window.Tether": "tether"
+    }),
   ],
+
   module: {
-    // loaders: [
-    //   {
-    //     test: /\.js$/,
-    //     loaders: [ 'babel' ],
-    //     exclude: /node_modules/,
-    //     include: __dirname
-    //   },
-    //   {
-    //     test: /\.scss$/,
-    //     loaders: ["style", "css", "sass"],
-    //     include: __dirname
-    //   },
-    //   {
-    //     test: /\.css?$/,
-    //     loaders: [ 'style', 'raw' ],
-    //     include: __dirname
-    //   },
-    //   {
-    //     test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-    //     loader: "url-loader?limit=10000&mimetype=application/font-woff"
-    //   },
-    //   {
-    //     test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-    //     loader: "file-loader"
-    //   }
-    // ]
     loaders: [
       {
         test: /\.jsx?$/,
@@ -79,5 +68,7 @@ module.exports = {
       },
     ],
   },
+
   postcss: [autoprefixer],
-}
+
+};
