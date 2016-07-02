@@ -1,4 +1,6 @@
-const home = require('./api/controllers/home'),
+const express = require('express')
+const authController = require('./api/controllers/auth');
+    home = require('./api/controllers/home'),
     player = require('./api/controllers/player'),
     team = require('./api/controllers/team')
     league = require('./api/controllers/league'),
@@ -8,61 +10,101 @@ const home = require('./api/controllers/home'),
     draftpick = require('./api/controllers/draftpick'),
     trade = require('./api/controllers/trade');
 
-module.exports.initialize = function(app) {
+// Create our Express router
+var router = express.Router();
 
-  // API Routes
-  app.get('/api/', home.isAlive);
+// API Routes
+router.route('/api/player')
+  .get(authController.isAuthenticated, player.index)
+  .post(authController.isAuthenticated, player.create);
 
-  app.get('/api/player', player.index);
-  app.get('/api/player/:id', player.getById);
-  app.get('/api/player/autocomplete/:term', player.autocomplete)
-  app.post('/api/player', player.create);
-  app.put('/api/player/:id', player.update);
-  app.delete('/api/player/:id', player.deactivate);
+router.route('/api/player/:id')
+  .get(authController.isAuthenticated, player.getById)
+  .put(authController.isAuthenticated, player.update)
+  .delete(authController.isAuthenticated, player.deactivate);
 
-  app.get('/api/team', team.index);
-  app.get('/api/team/:abbr', team.byAbbr);
-  app.post('/api/team', team.create);
-  app.put('/api/team/:id', team.update);
-  app.delete('/api/team/:id', team.deactivate);
+router.route('/api/player/autocomplete/:term')
+  .get(authController.isAuthenticated, player.autocomplete);
 
-  app.get('/api/league', league.index);
-  app.get('/api/owner/:id', owner.getById);
-  app.post('/api/league', league.create);
-  app.put('/api/league/:id', league.update);
-  app.delete('/api/league/:id', league.deactivate);
+router.route('/api/team/')
+  .get(authController.isAuthenticated, team.index)
+  .post(authController.isAuthenticated, team.create);
 
-  app.get('/api/owner', owner.index);
-  app.get('/api/owner/:id', owner.getById);
-  app.get('/api/owner/league/:id', owner.forLeague);
-  app.post('/api/owner', owner.create);
-  app.put('/api/owner/:id', owner.update);
-  app.delete('/api/owner/:id', owner.deactivate);
+router.route('/api/team/:abbr')
+  .get(authController.isAuthenticated, team.byAbbr);
 
-  app.get('/api/draft', draft.index);
-  app.get('/api/draft/:id', draft.getById);
-  app.post('/api/draft', draft.create);
-  app.put('/api/draft/:id', draft.update);
-  app.delete('/api/draft/:id', draft.deactivate);
+router.route('/api/team/:id')
+  .put(authController.isAuthenticated, team.update)
+  .delete(authController.isAuthenticated, team.deactivate);
 
-  app.get('/api/roster', roster.index);
-  app.get('/api/roster/:id', roster.getById);
+router.route('/api/league')
+  .get(authController.isAuthenticated, league.index)
+  .post(authController.isAuthenticated, league.create);
 
-  app.get('/api/draftpick', draftpick.index);
-  app.get('/api/draftpick/:id', draftpick.getById);
-  app.get('/api/draftpick/keepers/league/:id', draftpick.getKeepersForLeague);
-  app.get('/api/draftpick/keepers/league/:league_id/owner/:owner_id', draftpick.getKeepersForLeagueOwner);
+router.route('/api/league/:id')
+  .put(authController.isAuthenticated, league.update)
+  .delete(authController.isAuthenticated, league.deactivate);
 
-  app.get('/api/trade', trade.index);
-  app.get('/api/trade/:id', trade.getById);
-  app.get('/api/trade/league/:id', trade.getTradesForLeague);
-  app.get('/api/trade/league/:league_id/owner/:owner_id', trade.getTradesForLeagueOwner);
-  app.post('/api/trade', trade.submitTrade);
-  app.put('/api/trade/:id', trade.update);
+router.route('/api/owner/')
+  .get(authController.isAuthenticated, owner.index)
+  .post(authController.isAuthenticated, owner.create);
 
-  // WEB CLIENT Routes
-  app.get('/*', function(req, res) {
+router.route('/api/owner/:username')
+  .get(authController.isAuthenticated, owner.getByUsername)
+  .put(authController.isAuthenticated, owner.update)
+  .delete(authController.isAuthenticated, owner.deactivate);
+
+router.route('/api/owner/league/:id')
+  .get(authController.isAuthenticated, owner.forLeague);
+
+router.route('/api/draft')
+  .get(authController.isAuthenticated, draft.index)
+  .post(authController.isAuthenticated, draft.create);
+
+router.route('/api/draft/:id')
+  .get(authController.isAuthenticated, draft.getById)
+  .put(authController.isAuthenticated, draft.update)
+  .delete(authController.isAuthenticated, draft.deactivate);
+
+router.route('/api/roster')
+  .get(authController.isAuthenticated, roster.index);
+
+router.route('/api/roster:id')
+  .get(authController.isAuthenticated, roster.getById);
+
+router.route('/api/draftpick')
+  .get(authController.isAuthenticated, draftpick.index)
+
+router.route('/api/draftpick/:id')
+  .get(authController.isAuthenticated, draftpick.getById);
+
+router.route('/api/draftpick/keepers/league/:id')
+  .get(authController.isAuthenticated, draftpick.getKeepersForLeague);
+
+router.route('/api/draftpick/keepers/league/:league_id/owner/:owner_id')
+  .get(authController.isAuthenticated, draftpick.getKeepersForLeagueOwner);
+
+router.route('/api/trade')
+  .get(authController.isAuthenticated, trade.index)
+  .post(authController.isAuthenticated, trade.submitTrade);
+
+router.route('/api/trade/:id')
+  .get(authController.isAuthenticated, trade.getById)
+  .put(authController.isAuthenticated, trade.update)
+
+router.route('/api/trade/league/:id')
+  .get(authController.isAuthenticated, trade.getTradesForLeague);
+
+router.route('/api/trade/league/:league_id/owner/:owner_id')
+  .get(authController.isAuthenticated, trade.getTradesForLeagueOwner);
+
+
+router.route('/api/').get(home.isAlive);
+
+// WEB CLIENT Routes
+router.route('/*')
+  .get(function(req, res) {
     res.sendFile(__dirname + '/index.html')
   });
 
-};
+module.exports = router;

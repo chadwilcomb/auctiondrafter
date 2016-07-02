@@ -1,5 +1,4 @@
 /* eslint no-console: 0 */
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const webpack = require('webpack');
@@ -8,6 +7,7 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 const path = require('path');
 const router = require('./router');
 const devBuildConfig = require('./webpack.dev.config');
+const passport = require('passport');
 
 const PORT = process.env.PORT || 4000;
 
@@ -28,17 +28,12 @@ server.use(webpackDevMiddleware(compiler, {
 }));
 
 server.use(webpackHotMiddleware(compiler));
-
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
-
-// server.use('/', (req, res) => (
-//   res.sendFile(path.join(__dirname, 'app', 'markup', 'bootstrap-dev.html'))
-// ));
+server.use(passport.initialize());
+server.use(router);
 
 server.listen(PORT, 'localhost', err => {
   if (err) console.log(`=> OMG!!! 🙀 ${err}`);
   console.log(`=> 🔥  Webpack dev server is running on port ${PORT}`);
 });
-
-router.initialize(server);

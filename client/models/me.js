@@ -1,5 +1,3 @@
-import xhr from 'xhr'
-import app from 'ampersand-app'
 import Model from 'ampersand-model'
 import authMixin from '../helpers/api-auth-mixin'
 import LeagueCollection from './league-collection'
@@ -7,7 +5,7 @@ import LeagueCollection from './league-collection'
 export default Model.extend(authMixin, {
 
   url () {
-    let url = '/api/user/';
+    let url = '/api/owner/';
     if (this.isRegister) {
       return url;
     }
@@ -24,8 +22,13 @@ export default Model.extend(authMixin, {
   },
 
   props: {
+    id: 'number',
+    name: 'string',
+    email: 'string',
     joined: 'date',
+    role_id: 'number',
     username: 'string',
+    active: 'boolean',
     password: 'string'
   },
 
@@ -59,10 +62,10 @@ export default Model.extend(authMixin, {
     };
   },
 
-  // fetchInitialData () {
-  //   if (this.authHeader) {
-  //     this.leagues.fetch();
-  //   }
-  // }
+  fetchInitialData () {
+    if (this.authHeader) {
+      this.leagues.fetch();
+    }
+  }
 
 });

@@ -1,7 +1,6 @@
 import Model from 'ampersand-model';
 import authMixin from '../helpers/api-auth-mixin'
 import OwnerCollection from './owner-collection'
-import DraftCollection from './draft-collection'
 
 export default Model.extend(authMixin, {
 
@@ -10,14 +9,11 @@ export default Model.extend(authMixin, {
   props: {
     id: 'number',
     name: 'string',
-    created: 'string',
-    founder_id: 'number',
+    email: 'string',
+    joined: 'date',
+    role_id: 'number',
+    username: 'string',
     active: 'boolean'
-  },
-
-  collections: {
-    owners: OwnerCollection,
-    drafts: DraftCollection
   }
 
 });

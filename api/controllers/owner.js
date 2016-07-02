@@ -2,6 +2,13 @@
 const Owner = require('../models/owner')
 const League = require('../models/league')
 
+function cleanse(user) {
+  user = user.toJSON();
+  delete user["password"];
+  user.authenticated = true;
+  return user;
+}
+
 exports.index = function (req, res) {
 
   let query = { where: { active: true }};
@@ -18,13 +25,13 @@ exports.index = function (req, res) {
 
 };
 
-exports.getById = function (req, res) {
+exports.getByUsername = function (req, res) {
 
   Owner
-  .where({ id: req.params.id })
-  .fetch({ withRelated: ['leagues'] })
+  .where({ username: req.params.username })
+  .fetch({ withRelated: ['leagues.owners', 'leagues.drafts'] })
   .then(function (owner) {
-    return res.json(owner);
+    return res.json(cleanse(owner));
   })
   .catch(function (err) {
     res.status(500).json({ error: err.message });
@@ -73,7 +80,7 @@ exports.create = function (req, res) {
 //PUT
 exports.update = function (req, res) {
 
-  Owner.forge({ id: req.params.id })
+  Owner.forge({ username: req.params.username })
   .fetch({ require: true })
   .then(function (owner) {
     owner.save({
@@ -100,7 +107,7 @@ exports.update = function (req, res) {
 //DELETE
 exports.deactivate = function (req, res) {
 
-  Owner.forge({ id: req.params.id })
+  Owner.forge({ username: req.params.username })
   .fetch({ require: true })
   .then(function (owner) {
     owner.save({

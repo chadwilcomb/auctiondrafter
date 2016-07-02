@@ -13,7 +13,30 @@ export default React.createClass({
       <div>
         {leagues.map(league => {
           return (
-            <div>league.name</div>
+            <div key={league.id}>
+              <h2>{league.name}</h2>
+              <div>Founded: {new Date(league.created).toLocaleDateString()}</div>
+              <div>Drafts:</div>
+              <ul>
+              {league.drafts.map(draft => {
+                return (
+                  <li key={draft.id}>
+                    <div>{new Date(draft.draft_date).toLocaleDateString()} {draft.location}</div>
+                  </li>
+                )
+              })}
+              </ul>
+              <div>League Members:</div>
+              <ul>
+              {league.owners.map(owner => {
+                return (
+                  <li key={owner.id}>
+                    <div>{owner.name} {owner.email}</div>
+                  </li>
+                )
+              })}
+              </ul>
+            </div>
           )
         })}
       </div>
