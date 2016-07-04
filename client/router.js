@@ -3,10 +3,12 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Router from 'ampersand-router'
 import Layout from './layout'
+import Draft from './models/draft'
 import MessagePage from './pages/message'
 import PublicPage from './pages/public'
 import RegisterUserPage from './pages/register'
 import LeaguesPage from './pages/leagues'
+import DraftDetailPage from './pages/draft-detail'
 
 export default Router.extend({
 
@@ -23,10 +25,21 @@ export default Router.extend({
 
   routes: {
     '': 'leagues',
+    'draft/:id': 'draftDetail',
     'signin': 'public',
     'register': 'registerUser',
     'logout': 'logout',
     '*fourohfour': 'fourOhFour'
+  },
+
+  draftDetail (id) {
+    if (!app.me.authenticated) {
+      this.renderPage(<PublicPage me={app.me}/>, { layout: false });
+    } else {
+      const draft = new Draft({ id: parseInt(id) });
+      draft.fetch();
+      this.renderPage(<DraftDetailPage draft={draft} />);
+    }
   },
 
   public () {

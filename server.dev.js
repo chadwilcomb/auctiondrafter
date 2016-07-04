@@ -28,10 +28,15 @@ server.use(webpackDevMiddleware(compiler, {
 }));
 
 server.use(webpackHotMiddleware(compiler));
+
 server.use(bodyParser.json());
+
 server.use(bodyParser.urlencoded({ extended: true }));
+
 server.use(passport.initialize());
+
 server.use(router);
+
 
 server.listen(PORT, 'localhost', err => {
   if (err) console.log(`=> OMG!!! 🙀 ${err}`);

@@ -12,7 +12,7 @@ export default React.createClass({
 
     return (
       <nav className="navbar navbar-light bg-faded">
-        <a className="navbar-brand" href="/"><i className="fa fa-heartbeat"></i> AuctionDrafter</a>
+        <a className="navbar-brand" href="/"><i className="fa fa-money"></i> AuctionDrafter</a>
         <ul className="nav navbar-nav pull-right">
           <li className="nav-item">
             <span className="nav-link hidden-xs-down">Welcome, {me.username}</span>

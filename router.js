@@ -69,7 +69,7 @@ router.route('/api/draft/:id')
 router.route('/api/roster')
   .get(authController.isAuthenticated, roster.index);
 
-router.route('/api/roster:id')
+router.route('/api/roster/:id')
   .get(authController.isAuthenticated, roster.getById);
 
 router.route('/api/draftpick')

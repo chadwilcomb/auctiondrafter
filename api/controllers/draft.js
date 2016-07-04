@@ -22,7 +22,7 @@ exports.getById = function (req, res) {
 
   Draft
   .where({ id: req.params.id })
-  .fetch({ withRelated: ['league', 'rosters'] })
+  .fetch({ withRelated: ['league', 'rosters.owner', 'rosters.draftpicks.player'] })
   .then(function (draft) {
     return res.json(draft);
   })

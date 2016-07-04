@@ -48,6 +48,15 @@ export default Model.extend(authMixin, {
     leagues: LeagueCollection
   },
 
+  getDraft(id) {
+    let draft;
+    this.leagues.forEach(league => {
+      const d = league.drafts.get(id);
+      if (d) draft = d;
+    });
+    return draft;
+  },
+
   syncToLocalStorage () {
     window.localStorage.me = JSON.stringify({
       username: this.username,

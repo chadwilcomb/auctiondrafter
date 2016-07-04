@@ -19,9 +19,10 @@ export default React.createClass({
               <div>Drafts:</div>
               <ul>
               {league.drafts.map(draft => {
+                const href = '/draft/' + draft.id;
                 return (
                   <li key={draft.id}>
-                    <div>{new Date(draft.draft_date).toLocaleDateString()} {draft.location}</div>
+                    <div>{new Date(draft.draft_date).toLocaleDateString()} {draft.location} <a href={href}>Details</a></div>
                   </li>
                 )
               })}

@@ -4,7 +4,7 @@ const League = require('../models/league')
 
 function cleanse(user) {
   user = user.toJSON();
-  delete user["password"];
+  delete user['password'];
   user.authenticated = true;
   return user;
 }
